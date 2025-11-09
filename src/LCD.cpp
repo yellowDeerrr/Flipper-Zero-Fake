@@ -57,6 +57,12 @@ void displayNetworks(std::vector<WiFiNetwork>& nets){
     displayingNetworks = true;
 }
 
+void displayScanLoading(){
+    lcd.clear();
+    lcd.setCursor(1, 0);
+    lcd.print("Scanning...");
+}
+
 void displayCounter(int counter){
     if(displayingNetworks) return;
 

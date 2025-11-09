@@ -8,3 +8,4 @@ void displayCounter(int counter);
 void drawMainMenu();
 void scrollUp();
 void scrollDown();
+void displayScanLoading();

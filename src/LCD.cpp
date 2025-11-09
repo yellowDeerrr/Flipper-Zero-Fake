@@ -8,6 +8,18 @@ uint8_t arrow[8] = {0x00, 0x04 ,0x06, 0x1f, 0x06, 0x04, 0x00}; //Send 0,4,6,1F,6
 
 LiquidCrystal_I2C lcd(0x27, 20, 4);
 
+
+// temp
+const int maxItemTitleLength = 11;
+const int itemsNum = 4;
+const int indexOfLastItem = itemsNum - 1;
+String menuItems[][maxItemTitleLength] = {"Network", "Infrared", "RFID", "Bluetooth"};
+
+int currentScreen = 0; // 0 - Main menu, 1 - Sub Menu ...
+int currentPointedMenuItem = 0;
+
+// ---- 
+
 void initDisplay(){
     Wire.begin(41, 42);
 
@@ -55,16 +67,27 @@ void displayCounter(int counter){
 }
 
 
-// void drawMainMenu(String menuItems[], int currentScreen, int currentPointedMenuItem){
-//     lcd.clear();
-//     for(int i = 0; i < 4; i++){
-//         lcd.setCursor(1, i);
-//         lcd.printf(menuItems[i].c_str());
-//     }
+void drawMainMenu(){
+    lcd.clear();
+    for(int i = 0; i < 4; i++){
+        lcd.setCursor(1, i);
+        lcd.printf(menuItems[currentScreen][i].c_str());
+    }
 
-//     lcd.setCursor(0, currentPointedMenuItem);
-//     lcd.write(0);
-// }
+    lcd.setCursor(0, currentPointedMenuItem);
+    lcd.write(0);
+}
 
+void scrollUp(){
+    currentPointedMenuItem--;
+    // Serial.println(currentPointedMenuItem);
 
-// void count
+    if(currentPointedMenuItem < 0) currentPointedMenuItem = indexOfLastItem;
+    drawMainMenu();
+}
+void scrollDown(){
+    currentPointedMenuItem++;
+    // Serial.println(currentPointedMenuItem);
+    if(currentPointedMenuItem > indexOfLastItem) currentPointedMenuItem = 0;
+    drawMainMenu();
+}

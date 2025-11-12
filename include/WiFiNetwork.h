@@ -22,4 +22,8 @@ public:
 
 void initNetwork(int n);
 std::vector<WiFiNetwork> scanNetworks();
+void handleRoot();
+void initServer();
+void handleClient();
+void printUsers();
 

@@ -1,7 +1,9 @@
 #include "MenuSystem.h"
 #include "LCD.h"
+#include "WiFiManager.h"
 
 extern LCDDisplay display;
+extern WiFiManager wifi;
 
 // Define all menu arrays in .cpp file with automatic size calculation
 static String mainMenuItemsArray[] = {"Networks", "IR", "Bluetooth", "RFID"};
@@ -161,15 +163,21 @@ void MenuSystem::scanNetworks() {
   display.clear();
   display.printCentered("Scanning...", 1);
   delay(1000);
+
+  int n = 0;
+  std::vector<WiFiManager::NetworkInfo> nets = wifi.scanNetworksManaged(n, true);
   
+  if(n == 0){
+    display.clear();
+    display.print("No networks found..");
+    return;
+  }
+
   // Simulate network scanning
-  scannedNetworksCount = 5;
-  scannedNetworks[0] = "WiFi_Home";
-  scannedNetworks[1] = "Office_Net";
-  scannedNetworks[2] = "Guest_WiFi";
-  scannedNetworks[3] = "Neighbor_5G";
-  scannedNetworks[4] = "Public_AP";
-  
+  scannedNetworksCount = n;
+  for(int i = 0; i < n; i++){
+    scannedNetworks[i] = nets[i].ssid;
+  }
   display.clear();
   display.print("Found: " + String(scannedNetworksCount), 1, 0);
   delay(1500);
@@ -179,18 +187,18 @@ void MenuSystem::scanNetworks() {
 }
 
 void MenuSystem::handleItemOption(int optionIndex) {
-  String selectedNetwork = scannedNetworks[parentItemIndex];
+  WiFiManager::NetworkInfo selectedNetwork = wifi.getNetworkByIdLastScan(parentItemIndex);
   
   if (optionIndex == 0) { // Connect
     display.clear();
     display.printCentered("Connecting to:", 1);
-    display.printCentered(selectedNetwork, 2);
+    display.printCentered(selectedNetwork.ssid, 2);
     delay(2000);
     backToSubMenu();
   } else if (optionIndex == 1) { // Deauth
     display.clear();
     display.printCentered("Deauth:", 1);
-    display.printCentered(selectedNetwork, 2);
+    display.printCentered(selectedNetwork.ssid, 2);
     delay(2000);
     backToSubMenu();
   } else if (optionIndex == 2) { // Info
@@ -200,49 +208,52 @@ void MenuSystem::handleItemOption(int optionIndex) {
   }
 }
 
-void MenuSystem::showNetworkInfo(String ssid) {
+void MenuSystem::showNetworkInfo(WiFiManager::NetworkInfo network) {
   // Simulate getting network info - replace with real WiFi data
   infoItemsCount = 0;
   
   infoLabels[infoItemsCount] = "SSID";
-  infoValues[infoItemsCount] = ssid;
+  infoValues[infoItemsCount] = network.ssid;
   infoItemsCount++;
   
-  infoLabels[infoItemsCount] = "BSSID";
-  infoValues[infoItemsCount] = "AA:BB:CC:DD:EE:FF";
+  infoLabels[infoItemsCount] = "MAC";
+  infoValues[infoItemsCount] = wifi.getBSSIDString(network.bssid);
   infoItemsCount++;
   
   infoLabels[infoItemsCount] = "Channel";
-  infoValues[infoItemsCount] = "6";
+  infoValues[infoItemsCount] = network.channel;
   infoItemsCount++;
   
-  infoLabels[infoItemsCount] = "Frequency";
-  infoValues[infoItemsCount] = "2437 MHz";
-  infoItemsCount++;
+  // infoLabels[infoItemsCount] = "Frequency";
+  // infoValues[infoItemsCount] = "2437 MHz";
+  // infoItemsCount++;
   
   infoLabels[infoItemsCount] = "RSSI";
-  infoValues[infoItemsCount] = "-45 dBm";
+  infoValues[infoItemsCount] = network.rssi;
   infoItemsCount++;
   
+  // infoLabels[infoItemsCount] = "Security";
+  // infoValues[infoItemsCount] = "WPA2-PSK";
+  // infoItemsCount++;
   infoLabels[infoItemsCount] = "Security";
-  infoValues[infoItemsCount] = "WPA2-PSK";
+  infoValues[infoItemsCount] = network.encryption;
   infoItemsCount++;
   
-  infoLabels[infoItemsCount] = "Encryption";
-  infoValues[infoItemsCount] = "AES-CCMP";
-  infoItemsCount++;
+  // infoLabels[infoItemsCount] = "Encryption";
+  // infoValues[infoItemsCount] = "AES-CCMP";
+  // infoItemsCount++;
   
-  infoLabels[infoItemsCount] = "Signal Quality";
-  infoValues[infoItemsCount] = "Excellent (95%)";
-  infoItemsCount++;
+  // infoLabels[infoItemsCount] = "Signal Quality";
+  // infoValues[infoItemsCount] = "Excellent (95%)";
+  // infoItemsCount++;
   
-  infoLabels[infoItemsCount] = "Hidden";
-  infoValues[infoItemsCount] = "No";
-  infoItemsCount++;
+  // infoLabels[infoItemsCount] = "Hidden";
+  // infoValues[infoItemsCount] = "No";
+  // infoItemsCount++;
   
-  infoLabels[infoItemsCount] = "WPS";
-  infoValues[infoItemsCount] = "Enabled";
-  infoItemsCount++;
+  // infoLabels[infoItemsCount] = "WPS";
+  // infoValues[infoItemsCount] = "Enabled";
+  // infoItemsCount++;
   
   // Enter info view mode
   currentLevel = INFO_VIEW;

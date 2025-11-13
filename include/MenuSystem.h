@@ -2,6 +2,7 @@
 #define MENUSYSTEM_H
 
 #include <Arduino.h>
+#include <WiFiManager.h>
 
 enum MenuLevel { MAIN_MENU, SUB_MENU, ITEM_LIST, ITEM_OPTIONS, INFO_VIEW };
 
@@ -11,7 +12,6 @@ public:
   void init();
   void setMenu(String* menuItems, int menuSize);
   void handleSelection();
-  void navigateBack();
   
   // Menu navigation
   void enterSubMenu(int mainIndex);
@@ -71,7 +71,7 @@ private:
   void scanNetworks();
   void captureIR();
   void readRFID();
-  void showNetworkInfo(String ssid);
+  void showNetworkInfo(WiFiManager::NetworkInfo network);
   void backToMainMenu();
   void backToSubMenu();
   void backToItemList();

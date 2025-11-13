@@ -85,6 +85,7 @@
 #include "MenuSystem.h"
 #include "Encoder.h"
 #include "LCD.h"
+#include "WiFiManager.h"
 
 #define ENCODER_CLK 38
 #define ENCODER_DT 37
@@ -94,6 +95,7 @@
 LCDDisplay display(LCD_ADDRESS, 20, 4);
 Encoder encoder(ENCODER_CLK, ENCODER_DT, ENCODER_SW);
 MenuSystem menu;
+WiFiManager wifi;
 
 void setup() {
   Serial.begin(115200);
@@ -103,6 +105,7 @@ void setup() {
   menu.init();
   
   encoder.setBounds(0, menu.getCurrentSize() - 1);
+  wifi.setMode(WIFI_MODE_STA);
   
   display.displayMenu(menu.getCurrentMenuItems(), 
                      menu.getCurrentSize(), 
@@ -147,7 +150,7 @@ void loop() {
     // Update display based on current level
     if (menu.getCurrentLevel() == INFO_VIEW) {
       // Display scrollable info view
-      display.displayInfo(menu.getInfoLabels(), 
+      display.displsayInfo(menu.getInfoLabels(), 
                          menu.getInfoValues(), 
                          menu.getInfoItemsCount(), 
                          menu.getCurrentIndex());

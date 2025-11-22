@@ -15,7 +15,7 @@ public:
     AttackService();
     ~AttackService();
 
-    void startDeauthAttack(const MacAddress& sourceAP, const MacAddress& targetSTA, int times = 1);
+    void startDeauthAttack(const MacAddress& sourceAP, const MacAddress& targetSTA, unsigned int seconds = DEFAULT_SECONDS_DEAUTH);
     // void startHandshakeAttack(const MacAddress& sourceAP, const MacAddress& targetSTA);
     // void startPMKIDAttack(const MacAddress& sourceAP, const MacAddress& targetSTA);
 

